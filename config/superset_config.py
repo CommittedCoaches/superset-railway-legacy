@@ -2,7 +2,7 @@ import os
 
 FEATURE_FLAGS = {
     "ENABLE_TEMPLATE_PROCESSING": True,
-    "DASHBOARD_RBAC": True,
+    "DASHBOARD_RBAC": False,  # disabled — was blocking public role access per-dashboard
     "SQLLAB_ASYNC_TIME_LIMIT_SEC": 60 * 5
 }
 
@@ -12,6 +12,14 @@ ENABLE_PROXY_FIX = True
 # Public role gets same permissions as Gamma (read-only dashboard/chart access).
 AUTH_ROLE_PUBLIC = "Public"
 PUBLIC_ROLE_LIKE = "Gamma"
+
+# Exempt dashboard views from CSRF checks so anonymous iframe embeds work.
+WTF_CSRF_EXEMPT_LIST = [
+    "superset.views.core",
+    "superset.dashboards.api",
+    "superset.charts.api",
+    "superset.explore.api",
+]
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
