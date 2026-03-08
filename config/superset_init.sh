@@ -7,7 +7,10 @@ superset fab create-admin --username "$ADMIN_USERNAME" --firstname Superset --la
 superset db upgrade
 
 # setup roles and permissions
-superset superset init 
+superset superset init
+
+# Create read-only public viewer account for anonymous dashboard embeds
+superset fab create-user --username public_viewer --firstname Public --lastname Viewer --email public@localhost --password "$(openssl rand -hex 32)" --role Gamma || true
 
 # Starting server
 /bin/sh -c /usr/bin/run-server.sh
