@@ -10,9 +10,26 @@ superset db upgrade
 superset superset init
 
 # Create read-only public viewer account for anonymous dashboard embeds
-superset fab create-user --username public_viewer --firstname Public --lastname Viewer --email public@localhost --password "$(openssl rand -hex 32)" --role Gamma || true
+superset fab create-user --username public_viewer --firstname Public --lastname Viewer --email public@localhost --password "$(openssl rand -hex 32)" --role Alpha || true
 
-# Publish all dashboards so Gamma/Public users can view them
+# Ensure public_viewer has Alpha role (create-user won't update existing user)
+python3 -c "
+from superset.app import create_app
+app = create_app()
+with app.app_context():
+    from superset.extensions import db
+    sm = app.appbuilder.sm
+    user = sm.find_user(username='public_viewer')
+    alpha = sm.find_role('Alpha')
+    if user and alpha and alpha not in user.roles:
+        user.roles = [alpha]
+        db.session.commit()
+        print('Updated public_viewer to Alpha role')
+    else:
+        print('public_viewer already has Alpha role')
+" || true
+
+# Publish all dashboards
 python3 -c "
 from superset.app import create_app
 app = create_app()
