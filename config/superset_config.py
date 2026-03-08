@@ -8,6 +8,11 @@ FEATURE_FLAGS = {
 
 ENABLE_PROXY_FIX = True
 
+# Allow anonymous read-only access to dashboards (no login required for embeds).
+# Public role gets same permissions as Gamma (read-only dashboard/chart access).
+AUTH_ROLE_PUBLIC = "Public"
+PUBLIC_ROLE_LIKE = "Gamma"
+
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE")
