@@ -12,6 +12,22 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 
 SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE")
 
-# Allow embedding dashboards in iframes (for experiments dashboard)
-HTTP_HEADERS = {"X-Frame-Options": "ALLOWALL"}
-TALISMAN_ENABLED = False
+# Allow embedding dashboards in iframes (for experiments dashboard).
+# Keep Talisman enabled — only relax framing policy for known origins.
+TALISMAN_CONFIG = {
+    "frame_options": False,  # disable X-Frame-Options header; use CSP frame-ancestors instead
+    "content_security_policy": {
+        "default-src": ["'self'"],
+        "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+        "style-src": ["'self'", "'unsafe-inline'"],
+        "img-src": ["'self'", "data:", "blob:"],
+        "font-src": ["'self'", "data:"],
+        "connect-src": ["'self'"],
+        "frame-ancestors": [
+            "'self'",
+            "http://100.124.184.101:*",   # Tailscale dev
+            "http://localhost:*",
+            os.environ.get("EXPERIMENTS_DASHBOARD_ORIGIN", ""),
+        ],
+    },
+}
